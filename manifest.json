@@ -1,0 +1,32 @@
+{ 
+
+	"version": "1.0", 
+	"manifest_version": 2, 
+	"name": "Youtube Enhanced Speed Control",
+	"description": "Youtube Enhanced Speed Control by ThirtySix.", 	
+	
+	"browser_action": {
+		"default_title": "Youtube Enhanced Speed Control",
+		"default_popup": "popup.html",
+		"default_icon": {
+			"48": "36.png"
+		}
+	},
+	
+	"icons": {
+		"48": "36.png"
+	},
+	
+	"content_scripts": [{ 
+		"matches": ["*://*.youtube.com/*"], 
+		"js": ["youtube.js"], 
+		"all_frames": true		
+	}],
+	
+	"permissions": [
+		"https://www.googleapis.com/*", 
+		"activeTab", 
+		"storage"
+	]
+	
+}
