@@ -25,7 +25,7 @@ sheet += '.custombutton:hover {opacity: 1;}';
 sheet += '';
 sheet += '';
 sheet += '.tooltip {position: relative;display: inline-block;border: 1px black; user-select: none;}';
-sheet += '.tooltip .tooltiptext {visibility: hidden;width: 200px;background-color: rgba(0,0,0,0.7);color: #fff;text-align: center;border-radius: 6px;padding: 15px 0;/* Position the tooltip */position: absolute;z-index: 1;bottom: 100%;left: 50%;margin-left: -100px;margin-bottom: 20px;}';
+sheet += '.tooltip .tooltiptext {visibility: hidden;width: auto;margin-bottom: 20px;background-color: rgba(0,0,0,0.7);color: #fff;text-align: center;border-radius: 6px;padding: 0px 10px;position: absolute;z-index: 1;bottom: 100%;left: 50%;transform: translateX(-50%);white-space: nowrap;}';
 sheet += '.tooltip:hover .tooltiptext {visibility: visible;}';
 sheet += '';
 
@@ -67,8 +67,8 @@ function update() {
 		slider_el.id = "newspeedslider";
 		slider_el.style.paddingLeft = "100px";
 		slider_el.innerHTML = '<input id="slider" class="slider" type="range" value="1" step="0.05" min="0.1" max="3" /> <span id="speed" style="color: white;">2</span>';
-		slider_el.innerHTML += '<span style="padding-left: 10px;"><label class="input_wrapper tooltip"><input type="button" id="save_speed"><span class="custombutton"></span><span class="tooltiptext">save current as default speed</span></label></span>';
-		slider_el.innerHTML += '<span style="padding-left: 10px;"><label class="checkbox_wrapper tooltip"><input type="checkbox" id="music_checkbox"><span class="customcheckbox"></span><span class="tooltiptext">play music always at 1.00</span></label></span>';
+		slider_el.innerHTML += '<span style="padding-left: 10px;"><label class="input_wrapper tooltip"><input type="button" id="save_speed"><span class="custombutton"></span><span id="save__speed" class="tooltiptext">save current speed as default speed</span></label></span>';
+		slider_el.innerHTML += '<span style="padding-left: 10px;"><label class="checkbox_wrapper tooltip"><input type="checkbox" id="music_checkbox"><span class="customcheckbox"></span><span class="tooltiptext">play music videos always at 1.00 speed</span></label></span>';
 		insertAfter(parent_el, slider_el);
 	}	
 	
@@ -112,7 +112,7 @@ function new_video(speed) {
 	
 	document.getElementById("slider").value = parseFloat(playbackrate);
 	document.getElementById("speed").innerHTML = parseFloat(playbackrate).toFixed(2);
-	document.getElementById("slider").style.background = 'linear-gradient(to right, #fff 0%, #fff ' + parseFloat(playbackrate)*100/3 + '%, ' + colorcode + ' ' + parseFloat(playbackrate)*100/3 + '%, ' + colorcode + ' 100%)';
+	document.getElementById("slider").style.background = 'linear-gradient(to right, #fff 0%, #fff ' + parseFloat(playbackrate)*99/3 + '%, ' + colorcode + ' ' + parseFloat(playbackrate)*99/3 + '%, ' + colorcode + ' 100%)';
 	
 	document.getElementById("music_checkbox").onclick = function() {
 		if (document.getElementById("music_checkbox").checked) { 
@@ -136,7 +136,11 @@ function new_video(speed) {
 	document.getElementById("save_speed").onclick = function() {
 		localStorage.setItem("thirtysix_speed", playbackrate);
 		document.querySelector(".custombutton").style.border = "4px solid " + colorcode; 
-		setTimeout(function(){ document.querySelector(".custombutton").style.border = "4px solid white"; }, 250);
+		document.getElementById("save__speed").innerHTML = "saved";
+		setTimeout(function(){ 
+			document.querySelector(".custombutton").style.border = "4px solid white"; 
+			document.getElementById("save__speed").innerHTML = "save current as default speed";
+		}, 333);
 	}
 	
 	if ( document.querySelector(".custombutton").style.backgroundColor != "white" ) {
