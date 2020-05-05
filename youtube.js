@@ -13,14 +13,14 @@ sheet += '.slider { -webkit-appearance: none; background: red; border: solid 0px
 sheet += '';
 sheet += '.checkbox_wrapper {position: relative;display: inline-block;width: 30px;height: 17px;vertical-align: middle;user-select: none;}';
 sheet += '.checkbox_wrapper input {opacity: 0;width: 0;height: 0;}';
-sheet += '.customcheckbox {opacity: 0.7; position: absolute;cursor: pointer;top: 0;left: 0;right: 0;bottom: 0;background-color: red;-webkit-transition: .4s;transition: .4s;border-radius: 34px;border:4px solid red;}';
-sheet += '.checkbox_wrapper input:checked + .customcheckbox {border:4px solid #fff;}';
+sheet += '.customcheckbox {opacity: 0.7; position: absolute;cursor: pointer;top: 0;left: 0;right: 0;bottom: 0;background-color: white;-webkit-transition: .4s;transition: .4s;border-radius: 34px;border:4px solid white;}';
+sheet += '.checkbox_wrapper input:checked + .customcheckbox {border:4px solid white;}';
 sheet += '.customcheckbox:hover {opacity: 1;}';
 sheet += '';
 sheet += '.input_wrapper {position: relative;display: inline-block;width: 30px;height: 17px;vertical-align: middle;user-select: none;}';
 sheet += '.input_wrapper input {opacity: 0;width: 0;height: 0;}';
-sheet += '.custombutton {opacity: 0.7; position: absolute;cursor: pointer;top: 0;left: 0;right: 0;bottom: 0;background-color: red;-webkit-transition: .4s;transition: .4s;border-radius: 34px;border:4px solid red;}';
-sheet += '.input_wrapper input:focus + .custombutton {border:4px solid #fff;}';
+sheet += '.custombutton {opacity: 0.7; position: absolute;cursor: pointer;top: 0;left: 0;right: 0;bottom: 0;background-color: white;-webkit-transition: .1s;transition: .1s;border-radius: 34px;border:4px solid white;}';
+sheet += '.input_wrapper input:focus + .custombutton {border:4px solid white;}';
 sheet += '.custombutton:hover {opacity: 1;}';
 sheet += '';
 sheet += '';
@@ -59,7 +59,7 @@ function timeseconds_to_string(data) {
 	return newString;
 }
 
-function update() {
+function update_ui() {
 	
 	if (typeof slider_el == "undefined") {
 		parent_el = document.querySelector(".ytp-time-duration");
@@ -70,7 +70,39 @@ function update() {
 		slider_el.innerHTML += '<span style="padding-left: 10px;"><label class="input_wrapper tooltip"><input type="button" id="save_speed"><span class="custombutton"></span><span id="save__speed" class="tooltiptext">save current speed as default speed</span></label></span>';
 		slider_el.innerHTML += '<span style="padding-left: 10px;"><label class="checkbox_wrapper tooltip"><input type="checkbox" id="music_checkbox"><span class="customcheckbox"></span><span class="tooltiptext">play music videos always at 1.00 speed</span></label></span>';
 		insertAfter(parent_el, slider_el);
-	}	
+		
+		document.getElementById("slider").oninput = function() {
+			new_video(this.value);
+		};
+		
+		document.getElementById("save_speed").onclick = function() {
+			localStorage.setItem("thirtysix_speed", playbackrate);
+			document.querySelector(".custombutton").style.border = "4px solid " + colorcode; 
+			document.getElementById("save__speed").innerHTML = "saved";
+			setTimeout(function(){ 
+				document.querySelector(".custombutton").style.border = "4px solid white"; 
+				document.getElementById("save__speed").innerHTML = "save current as default speed";
+			}, 300);
+		}
+		
+		document.getElementById("music_checkbox").onclick = function() {
+			if (document.getElementById("music_checkbox").checked) { 
+				document.querySelector(".customcheckbox").style.border = "4px solid " + colorcode; 
+				localStorage.setItem("thirtysix_music", true);
+			} else { 
+				document.querySelector(".customcheckbox").style.border = "4px solid white"; 
+				localStorage.setItem("thirtysix_music", false);
+			}
+		}
+		
+		if (localStorage.getItem("thirtysix_music") && localStorage.getItem("thirtysix_music") == "true" && !document.getElementById("music_checkbox").checked) { document.getElementById("music_checkbox").click(); }
+		
+	}
+	
+	document.getElementById("slider").value = parseFloat(playbackrate);
+	document.getElementById("speed").innerHTML = parseFloat(playbackrate).toFixed(2);
+	document.getElementById("slider").style.background = 'linear-gradient(to right, #fff 0%, #fff ' + parseFloat(playbackrate)*99/3 + '%, ' + colorcode + ' ' + parseFloat(playbackrate)*99/3 + '%, ' + colorcode + ' 100%)';
+	if ( document.getElementById("music_checkbox").checked ) { document.querySelector(".customcheckbox").style.border = "4px solid " + colorcode; }
 	
 	if (typeof timer_el == "undefined") {
 		parent_el = slider_el;
@@ -81,7 +113,6 @@ function update() {
 	}
 	
 	if ( typeof timer_loop != "undefined" ) { clearInterval(timer_loop); }
-	
 	timer_loop = setInterval(function(){
 		
 		time_duration = document.querySelector(".ytp-time-duration").innerHTML;
@@ -97,58 +128,13 @@ function update() {
 		timer_el.innerHTML = '' + newtime_current_string + " / " + newtime_duration_string + " ( " + time_remaining_string + " ) ";
 		
 	}, 300);
+	
 }
 
 function new_video(speed) {
 	
 	playbackrate = speed;
-	update();
-	
-	document.getElementById("slider").oninput = function() {
-		this.style.background = 'linear-gradient(to right, #fff 0%, #fff ' + this.value*100/3 + '%, ' + colorcode + ' ' + this.value*100/3 + '%, ' + colorcode + ' 100%)'
-		document.getElementById("speed").innerHTML = this.value;
-		new_video(this.value);
-	};
-	
-	document.getElementById("slider").value = parseFloat(playbackrate);
-	document.getElementById("speed").innerHTML = parseFloat(playbackrate).toFixed(2);
-	document.getElementById("slider").style.background = 'linear-gradient(to right, #fff 0%, #fff ' + parseFloat(playbackrate)*99/3 + '%, ' + colorcode + ' ' + parseFloat(playbackrate)*99/3 + '%, ' + colorcode + ' 100%)';
-	
-	document.getElementById("music_checkbox").onclick = function() {
-		if (document.getElementById("music_checkbox").checked) { 
-			document.querySelector(".customcheckbox").style.border = "4px solid " + colorcode; 
-			localStorage.setItem("thirtysix_music", true);
-		} else { 
-			document.querySelector(".customcheckbox").style.border = "4px solid white"; 
-			localStorage.setItem("thirtysix_music", false);
-		}
-	}
-	
-	if ( document.querySelector(".customcheckbox").style.backgroundColor != "white" ) {
-		document.querySelector(".customcheckbox").style.backgroundColor = "white";
-		document.querySelector(".customcheckbox").style.border = "4px solid white";
-	}
-	
-	if (document.getElementById("music_checkbox").checked) { 
-		document.querySelector(".customcheckbox").style.border = "4px solid " + colorcode; 
-	}
-	
-	document.getElementById("save_speed").onclick = function() {
-		localStorage.setItem("thirtysix_speed", playbackrate);
-		document.querySelector(".custombutton").style.border = "4px solid " + colorcode; 
-		document.getElementById("save__speed").innerHTML = "saved";
-		setTimeout(function(){ 
-			document.querySelector(".custombutton").style.border = "4px solid white"; 
-			document.getElementById("save__speed").innerHTML = "save current as default speed";
-		}, 333);
-	}
-	
-	if ( document.querySelector(".custombutton").style.backgroundColor != "white" ) {
-		document.querySelector(".custombutton").style.backgroundColor = "white";
-		document.querySelector(".custombutton").style.border = "4px solid white";
-	}
-	
-	if (localStorage.getItem("thirtysix_music") && localStorage.getItem("thirtysix_music") == "true" && !document.getElementById("music_checkbox").checked) { document.getElementById("music_checkbox").click(); }
+	update_ui();
 	
 	document.querySelectorAll("video, audio").forEach(function(e) {
 		e.playbackRate = parseFloat(playbackrate); 
@@ -179,7 +165,7 @@ setInterval( function() {
 			fetch(link)
 			.then(response => response.json())
 			.then(function(data) { 
-			
+				
 				category = data.items[0].snippet.categoryId 
 				console.log("new video\nid = "+video_id+"\ncategory = "+category);
 				
@@ -220,7 +206,7 @@ setInterval( function() {
 	// switch link to /videos of a channel
 	var target = ["channel", "user"]
     target.forEach(function(e) {
-        if (url.includes(e)) {
+        if (url.includes("youtube") && url.includes(e)) {
             let anchor = url.indexOf(e);
             let newurl = url.substring(anchor + e.length + 1, url.length);
             
