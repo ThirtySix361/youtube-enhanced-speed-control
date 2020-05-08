@@ -72,7 +72,12 @@ function update_ui() {
 		insertAfter(parent_el, slider_el);
 		
 		document.getElementById("slider").oninput = function() {
-			new_video(this.value);
+			playbackrate = this.value;
+			document.getElementById("speed").innerHTML = parseFloat(playbackrate).toFixed(2);
+			document.getElementById("slider").style.background = 'linear-gradient(to right, #fff 0%, #fff ' + parseFloat(playbackrate)*99/3 + '%, ' + colorcode + ' ' + parseFloat(playbackrate)*99/3 + '%, ' + colorcode + ' 100%)';
+			document.querySelectorAll("video, audio").forEach(function(e) {
+				e.playbackRate = playbackrate;
+			});
 		};
 		
 		document.getElementById("save_speed").onclick = function() {
