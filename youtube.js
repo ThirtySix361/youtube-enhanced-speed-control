@@ -165,7 +165,10 @@ setInterval( function() {
 			if(ampersandPosition != -1) { video_id = video_id.substring(0, ampersandPosition); }
 			
 			key = "AIzaSyByajtIoT9Nq9-bKZI6bAFk2usmjm1COK8"; 
-			link = "https://www.googleapis.com/youtube/v3/videos?key=" + key + "&part=contentDetails,snippet&id=" + video_id;
+			parts = "snippet";
+			field = "items(snippet(categoryId,liveBroadcastContent))";
+			api_url = "https://www.googleapis.com/youtube/v3/videos";
+			link = api_url + "?key=" + key + "&id=" + video_id + "&fields=" + field + "&part=" + parts;
 			
 			fetch(link)
 			.then(response => response.json())
