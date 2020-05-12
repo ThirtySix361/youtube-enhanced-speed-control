@@ -174,17 +174,19 @@ setInterval( function() {
 			.then(response => response.json())
 			.then(function(data) { 
 				
-				category = data.items[0].snippet.categoryId 
-				console.log("new video\nid = "+video_id+"\ncategory = "+category);
+				category = data.items[0].snippet.categoryId;
+				is_live = data.items[0].snippet.liveBroadcastContent; 
 				
-				if (category == "10") { 
-					if ( localStorage.getItem("thirtysix_music") && localStorage.getItem("thirtysix_music") == "true") { playbackrate = 1.0 }
+				console.log("new video\nid = "+video_id+"\ncategory = "+category+"\nlive = "+is_live);
+				
+				if (category == "10" || is_live == "live" ) { 
+					if ( localStorage.getItem("thirtysix_music") == "true" || is_live == "live" ) { playbackrate = 1.0 }
 					else if ( localStorage.getItem("thirtysix_speed") ) { playbackrate = localStorage.getItem("thirtysix_speed"); }
-					else { playbackrate = 1.50; }
+					else { playbackrate = 1.00; }
 					colorcode = "rgba(205, 87, 87, 0.8)";
 				} else { 
 					if ( localStorage.getItem("thirtysix_speed") ) { playbackrate = localStorage.getItem("thirtysix_speed"); }
-					else { playbackrate = 1.50; }
+					else { playbackrate = 1.00; }
 					colorcode = "rgba(50, 121, 168, 0.8)";
 				}
 				
@@ -195,7 +197,7 @@ setInterval( function() {
 				console.log(err);
 				
 				if ( localStorage.getItem("thirtysix_speed") ) { playbackrate = localStorage.getItem("thirtysix_speed"); }
-				else { playbackrate = 1.50; }
+				else { playbackrate = 1.00; }
 				colorcode = "rgba(255, 0, 0, 0.8)";
 				
 				new_video(playbackrate);
