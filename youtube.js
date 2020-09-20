@@ -28,6 +28,9 @@ sheet += '.tooltip {position: relative;display: inline-block;border: 1px black; 
 sheet += '.tooltip .tooltiptext {visibility: hidden;width: auto;margin-bottom: 20px;background-color: rgba(0,0,0,0.7);color: #fff;text-align: center;border-radius: 6px;padding: 0px 10px;position: absolute;z-index: 1;bottom: 100%;left: 50%;transform: translateX(-50%);white-space: nowrap;}';
 sheet += '.tooltip:hover .tooltiptext {visibility: visible;}';
 sheet += '';
+sheet += '.ytp-left-controls { overflow: inherit !important; }';
+sheet += '';
+
 
 let style = document.createElement('style');
 document.body.appendChild(style); 
@@ -254,3 +257,106 @@ setInterval( function() {
     })
 
 */
+
+function setClipboardText(text){
+	var id = "mycustom-clipboard-textarea-hidden-id";
+	var existsTextarea = document.getElementById(id);
+
+	if(!existsTextarea){
+		//console.log("Creating textarea");
+		var textarea = document.createElement("textarea");
+		textarea.id = id;
+		// Place in top-left corner of screen regardless of scroll position.
+		textarea.style.position = 'fixed';
+		textarea.style.top = 0;
+		textarea.style.left = 0;
+
+		// Ensure it has a small width and height. Setting to 1px / 1em
+		// doesn't work as this gives a negative w/h on some browsers.
+		textarea.style.width = '1px';
+		textarea.style.height = '1px';
+
+		// We don't need padding, reducing the size if it does flash render.
+		textarea.style.padding = 0;
+
+		// Clean up any borders.
+		textarea.style.border = 'none';
+		textarea.style.outline = 'none';
+		textarea.style.boxShadow = 'none';
+
+		// Avoid flash of white box if rendered for any reason.
+		textarea.style.background = 'transparent';
+		document.querySelector("body").appendChild(textarea);
+		//console.log("The textarea now exists :)");
+		existsTextarea = document.getElementById(id);
+	} else {
+		//console.log("The textarea already exists :3")
+	}
+
+	existsTextarea.value = text;
+	existsTextarea.select();
+
+	try {
+		var status = document.execCommand('copy');
+		if(!status){
+			console.error("Cannot copy text");
+		}else{
+			//alert("The text is now on the clipboard");
+		}
+	} catch (err) {
+		console.log('Unable to copy.');
+	}
+}
+
+
+document.onmousedown = function click() { 
+	if (event.button == 2) { 
+		replace_link();
+	} 
+} 
+
+function replace_link() {
+	setTimeout(function() {
+		el = false;
+		if (!el) {
+			try {
+				el = document.querySelectorAll(".ytp-panel-menu")[1];
+				el.children[1].addEventListener("click", function() {
+					setTimeout(function() {
+						
+						video_t = "0";
+						
+						var video_id = get_url_param("v");
+						var video_s = get_url_param("s");
+						
+						newurl = "?v="+video_id+"&t="+video_t+"&s="+video_s;
+						window.history.replaceState("", "", newurl);
+						check = window.location.href;
+						
+						setClipboardText("https://youtu.be/"+get_url_param("v")+"?t="+video_t+"&s="+video_s);
+						
+					},100)
+				});
+				el.children[2].addEventListener("click", function() {
+					setTimeout(function() {
+						
+						time_current = document.querySelector(".ytp-time-current").innerHTML;
+						video_t = timestring_to_seconds(time_current);
+						
+						var video_id = get_url_param("v");
+						var video_s = get_url_param("s");
+						
+						newurl = "?v="+video_id+"&t="+video_t+"&s="+video_s;
+						window.history.replaceState("", "", newurl);
+						check = window.location.href;
+						
+						setClipboardText("https://youtu.be/"+get_url_param("v")+"?t="+video_t+"&s="+video_s);
+						
+					},100)
+				});
+			} catch (e) {
+				
+			}
+		} 
+	},100)
+}
