@@ -72,16 +72,20 @@ function update_ui() {
 		insertAfter(parent_el, slider_el);
 		
 		document.getElementById("slider").oninput = function() {
-			playbackrate = this.value;
-			document.getElementById("speed").innerHTML = parseFloat(playbackrate).toFixed(2);
-			document.getElementById("slider").style.background = 'linear-gradient(to right, #fff 0%, #fff ' + parseFloat(playbackrate)*99/3 + '%, ' + colorcode + ' ' + parseFloat(playbackrate)*99/3 + '%, ' + colorcode + ' 100%)';
+			playbackRate = this.value;
+			document.getElementById("speed").innerHTML = parseFloat(playbackRate).toFixed(2);
+			document.getElementById("slider").style.background = 'linear-gradient(to right, #fff 0%, #fff ' + parseFloat(playbackRate)*99/3 + '%, ' + colorcode + ' ' + parseFloat(playbackRate)*99/3 + '%, ' + colorcode + ' 100%)';
 			document.querySelectorAll("video, audio").forEach(function(e) {
-				e.playbackRate = playbackrate;
+				e.playbackRate = playbackRate;
 			});
+			var video_id = get_url_param("v");
+			var video_t = get_url_param("t");
+			window.history.replaceState("", "", "?v="+video_id+"&t="+video_t+"&s="+parseInt(playbackRate*100));
+			check = window.location.href;
 		};
 		
 		document.getElementById("save_speed").onclick = function() {
-			localStorage.setItem("thirtysix_speed", playbackrate);
+			localStorage.setItem("thirtysix_speed", playbackRate);
 			document.querySelector(".custombutton").style.border = "4px solid " + colorcode; 
 			document.getElementById("save__speed").innerHTML = "saved";
 			setTimeout(function(){ 
@@ -104,9 +108,9 @@ function update_ui() {
 		
 	}
 	
-	document.getElementById("slider").value = parseFloat(playbackrate);
-	document.getElementById("speed").innerHTML = parseFloat(playbackrate).toFixed(2);
-	document.getElementById("slider").style.background = 'linear-gradient(to right, #fff 0%, #fff ' + parseFloat(playbackrate)*99/3 + '%, ' + colorcode + ' ' + parseFloat(playbackrate)*99/3 + '%, ' + colorcode + ' 100%)';
+	document.getElementById("slider").value = parseFloat(playbackRate);
+	document.getElementById("speed").innerHTML = parseFloat(playbackRate).toFixed(2);
+	document.getElementById("slider").style.background = 'linear-gradient(to right, #fff 0%, #fff ' + parseFloat(playbackRate)*99/3 + '%, ' + colorcode + ' ' + parseFloat(playbackRate)*99/3 + '%, ' + colorcode + ' 100%)';
 	if ( document.getElementById("music_checkbox").checked ) { document.querySelector(".customcheckbox").style.border = "4px solid " + colorcode; }
 	
 	if (typeof timer_el == "undefined") {
@@ -121,11 +125,11 @@ function update_ui() {
 	timer_loop = setInterval(function(){
 		
 		time_duration = document.querySelector(".ytp-time-duration").innerHTML;
-		newtime_duration_seconds = Math.round( timestring_to_seconds(time_duration) / parseFloat(playbackrate) )
+		newtime_duration_seconds = Math.round( timestring_to_seconds(time_duration) / parseFloat(playbackRate) )
 		newtime_duration_string =  timeseconds_to_string(newtime_duration_seconds);
 		
 		time_current = document.querySelector(".ytp-time-current").innerHTML;
-		newtime_current_seconds = Math.round( timestring_to_seconds(time_current) / parseFloat(playbackrate) )
+		newtime_current_seconds = Math.round( timestring_to_seconds(time_current) / parseFloat(playbackRate) )
 		newtime_current_string = timeseconds_to_string(newtime_current_seconds - newtime_duration_seconds + newtime_duration_seconds);
 		
 		time_remaining_string = timeseconds_to_string(newtime_duration_seconds - newtime_current_seconds);
@@ -136,13 +140,20 @@ function update_ui() {
 	
 }
 
+function get_url_param(param) {
+	var url_param = window.location.search.split(param+'=')[1] || "0";
+	var ampersandPosition = url_param.indexOf('&');
+	if(ampersandPosition != -1) { url_param = url_param.substring(0, ampersandPosition); }	
+	return url_param;
+}
+
 function new_video(speed) {
 	
-	playbackrate = speed;
+	playbackRate = speed;
 	update_ui();
 	
 	document.querySelectorAll("video, audio").forEach(function(e) {
-		e.playbackRate = parseFloat(playbackrate); 
+		e.playbackRate = parseFloat(playbackRate); 
 	});
 	
 }
@@ -160,9 +171,7 @@ setInterval( function() {
 		
         setTimeout(function() {
             
-			var video_id = window.location.search.split('v=')[1];
-			var ampersandPosition = video_id.indexOf('&');
-			if(ampersandPosition != -1) { video_id = video_id.substring(0, ampersandPosition); }
+			var video_id = get_url_param("v");
 			
 			key = "AIzaSyByajtIoT9Nq9-bKZI6bAFk2usmjm1COK8"; 
 			parts = "snippet";
@@ -180,27 +189,31 @@ setInterval( function() {
 				console.log("new video\nid = "+video_id+"\ncategory = "+category+"\nlive = "+is_live);
 				
 				if (category == "10" || is_live == "live" ) { 
-					if ( localStorage.getItem("thirtysix_music") == "true" || is_live == "live" ) { playbackrate = 1.0 }
-					else if ( localStorage.getItem("thirtysix_speed") ) { playbackrate = localStorage.getItem("thirtysix_speed"); }
-					else { playbackrate = 1.00; }
+					if ( localStorage.getItem("thirtysix_music") == "true" || is_live == "live" ) { playbackRate = 1.0 }
+					else if ( localStorage.getItem("thirtysix_speed") ) { playbackRate = localStorage.getItem("thirtysix_speed"); }
+					else { playbackRate = 1.00; }
 					colorcode = "rgba(205, 87, 87, 0.8)";
 				} else { 
-					if ( localStorage.getItem("thirtysix_speed") ) { playbackrate = localStorage.getItem("thirtysix_speed"); }
-					else { playbackrate = 1.00; }
+					if ( localStorage.getItem("thirtysix_speed") ) { playbackRate = localStorage.getItem("thirtysix_speed"); }
+					else { playbackRate = 1.00; }
 					colorcode = "rgba(50, 121, 168, 0.8)";
 				}
 				
-				new_video(playbackrate);
+				playbackRate = get_url_param("s") != "0" ? parseFloat(get_url_param("s"))/100 : playbackRate;
+				var video_t = get_url_param("t");
+				window.history.replaceState("", "", "?v="+video_id+"&t="+video_t+"&s="+parseInt(playbackRate*100));
+				
+				new_video(playbackRate);
 				
 			})
 			.catch(function(err) { 
 				console.log(err);
 				
-				if ( localStorage.getItem("thirtysix_speed") ) { playbackrate = localStorage.getItem("thirtysix_speed"); }
-				else { playbackrate = 1.00; }
+				if ( localStorage.getItem("thirtysix_speed") ) { playbackRate = localStorage.getItem("thirtysix_speed"); }
+				else { playbackRate = 1.00; }
 				colorcode = "rgba(255, 0, 0, 0.8)";
 				
-				new_video(playbackrate);
+				new_video(playbackRate);
 				
 			})
 
