@@ -178,7 +178,7 @@ setInterval( function() {
 			
 			key = "AIzaSyByajtIoT9Nq9-bKZI6bAFk2usmjm1COK8"; 
 			parts = "snippet";
-			field = "items(snippet(categoryId,liveBroadcastContent))";
+			field = "items(snippet(title,categoryId,liveBroadcastContent))";
 			api_url = "https://www.googleapis.com/youtube/v3/videos";
 			link = api_url + "?key=" + key + "&id=" + video_id + "&fields=" + field + "&part=" + parts;
 			
@@ -186,10 +186,11 @@ setInterval( function() {
 			.then(response => response.json())
 			.then(function(data) { 
 				
+				title = data.items[0].snippet.title;
 				category = data.items[0].snippet.categoryId;
 				is_live = data.items[0].snippet.liveBroadcastContent; 
 				
-				console.log("new video\nid = "+video_id+"\ncategory = "+category+"\nlive = "+is_live);
+				console.log("new video\ntitle = "+title+"\nid = "+video_id+"\ncategory = "+category+"\nlive = "+is_live);
 				
 				if (category == "10" || is_live == "live" ) { 
 					if ( localStorage.getItem("thirtysix_music") == "true" || is_live == "live" ) { playbackRate = 1.0 }
@@ -205,6 +206,8 @@ setInterval( function() {
 				playbackRate = get_url_param("s") != "0" ? parseFloat(get_url_param("s"))/100 : playbackRate;
 				var video_t = get_url_param("t");
 				window.history.replaceState("", "", "?v="+video_id+"&t="+video_t+"&s="+parseInt(playbackRate*100));
+				
+				document.querySelector(".title yt-formatted-string.ytd-video-primary-info-renderer").innerHTML = title;
 				
 				new_video(playbackRate);
 				
