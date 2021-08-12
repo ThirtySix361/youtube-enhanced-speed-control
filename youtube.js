@@ -1,6 +1,6 @@
 // // // // // // // // // // // // // // // // // // // // //
 // this tool was developed by thirtysix						//
-// discord contact: ThirtySix#6977							//
+// discord contact: ThirtySix#7608							//
 // all rights reserved to the owner of the code				//
 // // // // // // // // // // // // // // // // // // // // //
 
@@ -167,10 +167,11 @@ check = "";
 
 setInterval( function() {
     
-    var url = window.location.href;
+    var url = window.location.href.split("&")[0];
     if ( url != check && url.includes("v=") ) {
  
         check = url;
+		// console.log("new video url:", check);
 		
         setTimeout(function() {
             
@@ -233,32 +234,28 @@ setInterval( function() {
     }
 	
 	// switch link to /videos of a channel
-	var target = ["channel", "user"]
-    target.forEach(function(e) {
-        if (url.includes("youtube") && url.includes(e)) {
-            let anchor = url.indexOf(e);
-            let newurl = url.substring(anchor + e.length + 1, url.length);
+	// var target = ["channel", "user"]
+    // target.forEach(function(e) {
+    //     if (url.includes("youtube") && url.includes(e)) {
+    //         let anchor = url.indexOf(e);
+    //         let newurl = url.substring(anchor + e.length + 1, url.length);
             
-            if ( !newurl.includes("/") && !triggered ) {
-                window.stop();
-                triggered = true;
-                setTimeout(function(){triggered = false;}, 2000);
-                setTimeout(function(){window.location.href = newurl + "/videos";}, 100);
-            }
-        }
-    });
+    //         if ( !newurl.includes("/") && !triggered ) {
+    //             window.stop();
+    //             triggered = true;
+    //             setTimeout(function(){triggered = false;}, 2000);
+    //             setTimeout(function(){window.location.href = newurl + "/videos";}, 100);
+    //         }
+    //     }
+    // });
 
 }, 500);
 
 /*
-
     document.querySelectorAll("#text-container .yt-simple-endpoint").forEach( (e) => {
-
         if ( !e.href.includes("/videos") )
         e.href = e.href + "/videos";
-
     })
-
 */
 
 function setClipboardText(text){
