@@ -212,8 +212,9 @@ setInterval( function() {
 				window.history.replaceState("", "", "?v="+video_id+"&t="+video_t+"&s="+parseInt(playbackRate*100));
 				
 				document.querySelector(".title yt-formatted-string.ytd-video-primary-info-renderer").innerHTML = title;
-				
-				disliketarget = document.querySelectorAll(".style-scope .ytd-toggle-button-renderer .style-text")[3];
+
+				disliketarget = document.querySelectorAll(".style-scope .ytd-toggle-button-renderer .style-text");
+				disliketarget = disliketarget[disliketarget.length - 1];
 				disliketarget.innerText = dislikes;
 				
 				new_video(playbackRate);
