@@ -35,7 +35,7 @@ sheet += '';
 let style = document.createElement('style');
 document.body.appendChild(style); 
 style.id = "youtube_enhanced_speed_control_by_36";
-style.innerHTML = sheet;
+style.textContent = sheet;
 
 function insertAfter(referenceNode, newNode) {
 	referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
@@ -76,7 +76,7 @@ function update_ui() {
 		
 		document.getElementById("slider").oninput = function() {
 			playbackRate = this.value;
-			document.getElementById("speed").innerHTML = parseFloat(playbackRate).toFixed(2);
+			document.getElementById("speed").textContent = parseFloat(playbackRate).toFixed(2);
 			document.getElementById("slider").style.background = 'linear-gradient(to right, #fff 0%, #fff ' + parseFloat(playbackRate)*99/3 + '%, ' + colorcode + ' ' + parseFloat(playbackRate)*99/3 + '%, ' + colorcode + ' 100%)';
 			document.querySelectorAll("video, audio").forEach(function(e) {
 				e.playbackRate = playbackRate;
@@ -90,10 +90,10 @@ function update_ui() {
 		document.getElementById("save_speed").onclick = function() {
 			localStorage.setItem("thirtysix_speed", playbackRate);
 			document.querySelector(".custombutton").style.border = "4px solid " + colorcode; 
-			document.getElementById("save__speed").innerHTML = "saved";
+			document.getElementById("save__speed").textContent = "saved";
 			setTimeout(function(){ 
 				document.querySelector(".custombutton").style.border = "4px solid white"; 
-				document.getElementById("save__speed").innerHTML = "save current as default speed";
+				document.getElementById("save__speed").textContent = "save current as default speed";
 			}, 300);
 		}
 		
@@ -112,7 +112,7 @@ function update_ui() {
 	}
 	
 	document.getElementById("slider").value = parseFloat(playbackRate);
-	document.getElementById("speed").innerHTML = parseFloat(playbackRate).toFixed(2);
+	document.getElementById("speed").textContent = parseFloat(playbackRate).toFixed(2);
 	document.getElementById("slider").style.background = 'linear-gradient(to right, #fff 0%, #fff ' + parseFloat(playbackRate)*99/3 + '%, ' + colorcode + ' ' + parseFloat(playbackRate)*99/3 + '%, ' + colorcode + ' 100%)';
 	if ( document.getElementById("music_checkbox").checked ) { document.querySelector(".customcheckbox").style.border = "4px solid " + colorcode; }
 	
@@ -127,17 +127,17 @@ function update_ui() {
 	if ( typeof timer_loop != "undefined" ) { clearInterval(timer_loop); }
 	timer_loop = setInterval(function(){
 		
-		time_duration = document.querySelector(".ytp-time-duration").innerHTML;
+		time_duration = document.querySelector(".ytp-time-duration").textContent;
 		newtime_duration_seconds = Math.round( timestring_to_seconds(time_duration) / parseFloat(playbackRate) )
 		newtime_duration_string =  timeseconds_to_string(newtime_duration_seconds);
 		
-		time_current = document.querySelector(".ytp-time-current").innerHTML;
+		time_current = document.querySelector(".ytp-time-current").textContent;
 		newtime_current_seconds = Math.round( timestring_to_seconds(time_current) / parseFloat(playbackRate) )
 		newtime_current_string = timeseconds_to_string(newtime_current_seconds - newtime_duration_seconds + newtime_duration_seconds);
 		
 		time_remaining_string = timeseconds_to_string(newtime_duration_seconds - newtime_current_seconds);
 		
-		timer_el.innerHTML = '' + newtime_current_string + " / " + newtime_duration_string + " ( " + time_remaining_string + " ) ";
+		timer_el.textContent = '' + newtime_current_string + " / " + newtime_duration_string + " ( " + time_remaining_string + " ) ";
 		
 	}, 300);
 	
@@ -211,11 +211,12 @@ setInterval( function() {
 				var video_t = get_url_param("t");
 				window.history.replaceState("", "", "?v="+video_id+"&t="+video_t+"&s="+parseInt(playbackRate*100));
 				
-				document.querySelector(".title yt-formatted-string.ytd-video-primary-info-renderer").innerHTML = title;
+				document.querySelector(".title yt-formatted-string.ytd-video-primary-info-renderer").textContent = title;
 
 				disliketarget = document.querySelectorAll(".style-scope .ytd-toggle-button-renderer .style-text");
+				//disliketarget = document.querySelectorAll(".style-scope .ytd-menu-renderer .force-icon-button .style-text");
 				disliketarget = disliketarget[disliketarget.length - 1];
-				disliketarget.innerText = dislikes;
+				disliketarget.textContent = dislikes;
 				
 				new_video(playbackRate);
 				
@@ -347,7 +348,7 @@ function replace_link() {
 				el.children[2].addEventListener("click", function() {
 					setTimeout(function() {
 						
-						time_current = document.querySelector(".ytp-time-current").innerHTML;
+						time_current = document.querySelector(".ytp-time-current").textContent;
 						video_t = timestring_to_seconds(time_current);
 						
 						var video_id = get_url_param("v");
