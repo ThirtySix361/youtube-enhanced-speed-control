@@ -84,7 +84,7 @@ function update_ui() {
 			var video_id = get_url_param("v");
 			var video_t = get_url_param("t");
 			window.history.replaceState("", "", "?v="+video_id+"&t="+video_t+"&s="+parseInt(playbackRate*100));
-			check = window.location.href;
+			check = window.location.href.split("&")[0];
 		};
 		
 		document.getElementById("save_speed").onclick = function() {
@@ -165,11 +165,14 @@ colorcode = "red";
 triggered = false;
 check = "";
 
+window.initURLspeed = get_url_param("s");
+initURLspeed == "0" ? delete window.initURLspeed : "" ;
+
 setInterval( function() {
     
     var url = window.location.href.split("&")[0];
-    if ( url != check && url.includes("v=") ) {
- 
+	if ( url != check && url.includes("v=") ) {
+		
         check = url;
 		// console.log("new video url:", check);
 		
@@ -194,8 +197,6 @@ setInterval( function() {
 				likes = data.items[0].statistics.likeCount; 
 				dislikes = data.items[0].statistics.dislikeCount; 
 				
-				console.log("new video\ntitle = "+title+"\nid = "+video_id+"\ncategory = "+category+"\nlive = "+is_live+"\nlikes = "+likes+"\ndislikes = "+dislikes);
-				
 				if (category == "10" || is_live == "live" ) { 
 					if ( localStorage.getItem("thirtysix_music") == "true" || is_live == "live" ) { playbackRate = 1.0 }
 					else if ( localStorage.getItem("thirtysix_speed") ) { playbackRate = localStorage.getItem("thirtysix_speed"); }
@@ -207,17 +208,47 @@ setInterval( function() {
 					colorcode = "rgba(50, 121, 168, 0.8)";
 				}
 				
-				playbackRate = get_url_param("s") != "0" ? parseFloat(get_url_param("s"))/100 : playbackRate;
-				var video_t = get_url_param("t");
-				window.history.replaceState("", "", "?v="+video_id+"&t="+video_t+"&s="+parseInt(playbackRate*100));
-				
-				document.querySelector(".title yt-formatted-string.ytd-video-primary-info-renderer").textContent = title;
+				if (typeof initURLspeed == "undefined") {
+					playbackRate = get_url_param("s") != "0" ? parseFloat(get_url_param("s"))/100 : playbackRate;
+					var video_t = get_url_param("t");
+					window.history.replaceState("", "", "?v="+video_id+"&t="+video_t+"&s="+parseInt(playbackRate*100));
+				} else {
+					playbackRate = parseFloat(initURLspeed)/100;
+					var video_t = get_url_param("t");
+					window.history.replaceState("", "", "?v="+video_id+"&t="+video_t+"&s="+parseInt(playbackRate*100));
+					delete window.initURLspeed;
+				}
 
-				disliketarget = document.querySelectorAll(".style-scope .ytd-toggle-button-renderer .style-text");
-				//disliketarget = document.querySelectorAll(".style-scope .ytd-menu-renderer .force-icon-button .style-text");
-				disliketarget = disliketarget[disliketarget.length - 1];
-				disliketarget.textContent = dislikes;
+				console.log(
+					"new video" + "\n" +
+					"title = " + title + "\n" +
+					"id = " + video_id + "\n" +
+					"category = " + category + "\n" +
+					"live = " + is_live + "\n" +
+					"likes = " + likes + "\n" + 
+					"dislikes = " + dislikes + "\n" + 
+					"init speed = " + playbackRate
+				);
 				
+				setTimeout(function() {
+					// remove video info box because i dont care about it!
+					if ( document.getElementById("clarify-box") !== null ) {
+						document.getElementById("clarify-box").parentNode.removeChild(document.getElementById("clarify-box"))
+					}
+
+					// youtube change title to original title
+					if ( document.querySelector(".title yt-formatted-string.ytd-video-primary-info-renderer") != undefined && typeof title != "undefined" ) {
+						document.querySelector(".title yt-formatted-string.ytd-video-primary-info-renderer").textContent = title;
+					}
+
+					// show dislikes for a video
+					disliketarget = document.querySelectorAll(".style-scope .ytd-menu-renderer .force-icon-button .style-text");
+					disliketarget = disliketarget[disliketarget.length - 1];
+					if ( disliketarget != undefined && typeof dislikes != "undefined" ) {
+						disliketarget.textContent = dislikes;
+					}
+				}, 1000);
+
 				new_video(playbackRate);
 				
 			})
@@ -229,17 +260,12 @@ setInterval( function() {
 				colorcode = "rgba(255, 0, 0, 0.8)";
 				
 				new_video(playbackRate);
-				
 			})
 
         },1000);
 		
     } 
-	
-	// remove video info box because i dont care about it!
-    if ( document.getElementById("clarify-box") !== null ) {
-        document.getElementById("clarify-box").parentNode.removeChild(document.getElementById("clarify-box"))
-    }
+
 	
 	// switch link to /videos of a channel
 	// var target = ["channel", "user"]
