@@ -237,9 +237,9 @@ setInterval( function() {
 					}
 
 					// youtube change title to original title
-					if ( document.querySelector(".title yt-formatted-string.ytd-video-primary-info-renderer") != undefined && typeof title != "undefined" ) {
-						document.querySelector(".title yt-formatted-string.ytd-video-primary-info-renderer").textContent = title;
-					}
+					// if ( document.querySelector(".title yt-formatted-string.ytd-video-primary-info-renderer") != undefined && typeof title != "undefined" ) {
+					// 	document.querySelector(".title yt-formatted-string.ytd-video-primary-info-renderer").textContent = title;
+					// }
 
 					// show dislikes for a video
 					disliketarget = document.querySelectorAll(".style-scope .ytd-menu-renderer .force-icon-button .style-text");
