@@ -1,38 +1,46 @@
 
-document.querySelectorAll("video").forEach(function(video){ 
-    video.addEventListener('playing', (event) => {
-        if ( location.href.includes("/shorts/") ) {
-            if ( window.storedpathname != event.target.duration || !window.storedpathname || window.paused ) {
-                // setup video
-                window.paused = false;
-                storedpathname = event.target.duration;
-                console.log("video", event.target.duration, event.target.baseURI);
-                setTimeout(function(){ event.target.controls = true; }, 250)
-                document.querySelectorAll("#overlay, #actions").forEach(function(e){ e.remove() })
-            } else if ( !window.new ) {
-                // goto new video
-                console.log("new");
-                window.new = true;
-                setTimeout(function(){ window.new = false; }, 500)
-                document.querySelector("button[aria-label='Nächstes Video']").click();
-            }
-        }
-    });
-});
+function showControls(event) {
+    setTimeout(function(){ event.target.controls = true; }, 500)
+}
+
+function removeOverlay() {
+    document.querySelectorAll("#overlay, #actions").forEach(function(e){ e.remove() })
+}
+
+function nextVideo() {
+    document.querySelector("button[aria-label='Nächstes Video']").click();
+}
+
+function nextVideoTimeout(nowSec, endSec) {
+    clearTimeout(window.waitTillNextVideo);
+    window.waitTillNextVideo = setTimeout(nextVideo, endSec*1000 - nowSec*1000)
+}
+
+function logVideo(reason, event) {
+    console.log(reason, event.target.duration, event.target.baseURI);
+}
+
+function videoPlaying(event) {
+    removeOverlay()
+    showControls(event)
+    logVideo("playing", event)
+    nextVideoTimeout(event.target.currentTime, event.target.duration)
+}
+
+function videoPaused(event) {
+    showControls(event)
+	clearTimeout(window.waitTillNextVideo);
+    logVideo("paused", event)
+}
+
+function videoEnd(event) {
+    logVideo("ended", event)
+}
 
 document.querySelectorAll("video").forEach(function(video){ 
-    video.addEventListener('pause', (event) => {
-        if ( location.href.includes("/shorts/") ) {
-            window.paused = true;
-            console.log("pause");
-            setTimeout(function(){ event.target.controls = true; }, 250)
-        }
-    });
-});
-
-document.querySelectorAll("video").forEach(function(video){ 
-    video.addEventListener('ended', (event) => {
-        console.log("ended");
-        document.querySelector("button[aria-label='Nächstes Video']").click();
-    });
+    if ( location.href.includes("/shorts/") ) {
+        video.addEventListener('playing', videoPlaying);
+        video.addEventListener('pause', videoPaused);
+        video.addEventListener('ended', videoEnd);
+    }
 });

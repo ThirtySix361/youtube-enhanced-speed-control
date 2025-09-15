@@ -33,7 +33,7 @@ sheet += '';
 
 
 let style = document.createElement('style');
-document.body.appendChild(style); 
+document.body.appendChild(style);
 style.id = "youtube_enhanced_speed_control_by_36";
 style.textContent = sheet;
 
@@ -63,7 +63,7 @@ function timeseconds_to_string(data) {
 }
 
 function update_ui() {
-	
+
 	if (typeof slider_el == "undefined") {
 		parent_el = document.querySelector(".ytp-time-duration");
 		slider_el = document.createElement("span");
@@ -73,7 +73,7 @@ function update_ui() {
 		slider_el.innerHTML += '<span style="padding-left: 10px;"><label class="input_wrapper tooltip"><input type="button" id="save_speed"><span class="custombutton"></span><span id="save__speed" class="tooltiptext">save current speed as default speed</span></label></span>';
 		slider_el.innerHTML += '<span style="padding-left: 10px;"><label class="checkbox_wrapper tooltip"><input type="checkbox" id="music_checkbox"><span class="customcheckbox"></span><span class="tooltiptext">play music videos always at 1.00 speed</span></label></span>';
 		insertAfter(parent_el, slider_el);
-		
+
 		document.getElementById("slider").oninput = function() {
 			playbackRate = this.value;
 			document.getElementById("speed").textContent = parseFloat(playbackRate).toFixed(2);
@@ -83,39 +83,39 @@ function update_ui() {
 			});
 			var video_id = get_url_param("v");
 			var video_t = get_url_param("t");
-			window.history.replaceState("", "", "?v="+video_id+"&t="+video_t+"&s="+parseInt(playbackRate*100));
+			window.history.replaceState("", "", "?v="+video_id+"&t="+video_t+"&r="+parseInt(playbackRate*100));
 			check = window.location.href.split("&")[0];
 		};
-		
+
 		document.getElementById("save_speed").onclick = function() {
 			localStorage.setItem("thirtysix_speed", playbackRate);
-			document.querySelector(".custombutton").style.border = "4px solid " + colorcode; 
+			document.querySelector(".custombutton").style.border = "4px solid " + colorcode;
 			document.getElementById("save__speed").textContent = "saved";
-			setTimeout(function(){ 
-				document.querySelector(".custombutton").style.border = "4px solid white"; 
+			setTimeout(function(){
+				document.querySelector(".custombutton").style.border = "4px solid white";
 				document.getElementById("save__speed").textContent = "save current as default speed";
 			}, 300);
 		}
-		
+
 		document.getElementById("music_checkbox").onclick = function() {
-			if (document.getElementById("music_checkbox").checked) { 
-				document.querySelector(".customcheckbox").style.border = "4px solid " + colorcode; 
+			if (document.getElementById("music_checkbox").checked) {
+				document.querySelector(".customcheckbox").style.border = "4px solid " + colorcode;
 				localStorage.setItem("thirtysix_music", true);
-			} else { 
-				document.querySelector(".customcheckbox").style.border = "4px solid white"; 
+			} else {
+				document.querySelector(".customcheckbox").style.border = "4px solid white";
 				localStorage.setItem("thirtysix_music", false);
 			}
 		}
-		
+
 		if (localStorage.getItem("thirtysix_music") && localStorage.getItem("thirtysix_music") == "true" && !document.getElementById("music_checkbox").checked) { document.getElementById("music_checkbox").click(); }
-		
+
 	}
-	
+
 	document.getElementById("slider").value = parseFloat(playbackRate);
 	document.getElementById("speed").textContent = parseFloat(playbackRate).toFixed(2);
 	document.getElementById("slider").style.background = 'linear-gradient(to right, #fff 0%, #fff ' + parseFloat(playbackRate)*99/3 + '%, ' + colorcode + ' ' + parseFloat(playbackRate)*99/3 + '%, ' + colorcode + ' 100%)';
 	if ( document.getElementById("music_checkbox").checked ) { document.querySelector(".customcheckbox").style.border = "4px solid " + colorcode; }
-	
+
 	if (typeof timer_el == "undefined") {
 		parent_el = slider_el;
 		timer_el = document.createElement("span");
@@ -123,99 +123,99 @@ function update_ui() {
 		timer_el.style.paddingLeft = "100px";
 		insertAfter(parent_el, timer_el);
 	}
-	
+
 	if ( typeof timer_loop != "undefined" ) { clearInterval(timer_loop); }
 	timer_loop = setInterval(function(){
-		
+
 		time_duration = document.querySelector(".ytp-time-duration").textContent;
 		newtime_duration_seconds = Math.round( timestring_to_seconds(time_duration) / parseFloat(playbackRate) )
 		newtime_duration_string =  timeseconds_to_string(newtime_duration_seconds);
-		
+
 		time_current = document.querySelector(".ytp-time-current").textContent;
 		newtime_current_seconds = Math.round( timestring_to_seconds(time_current) / parseFloat(playbackRate) )
 		newtime_current_string = timeseconds_to_string(newtime_current_seconds - newtime_duration_seconds + newtime_duration_seconds);
-		
+
 		time_remaining_string = timeseconds_to_string(newtime_duration_seconds - newtime_current_seconds);
-		
+
 		timer_el.textContent = '' + newtime_current_string + " / " + newtime_duration_string + " ( " + time_remaining_string + " ) ";
-		
+
 	}, 300);
-	
+
 }
 
 function get_url_param(param) {
 	var url_param = window.location.search.split(param+'=')[1] || "0";
 	var ampersandPosition = url_param.indexOf('&');
-	if(ampersandPosition != -1) { url_param = url_param.substring(0, ampersandPosition); }	
+	if(ampersandPosition != -1) { url_param = url_param.substring(0, ampersandPosition); }
 	return url_param;
 }
 
 function new_video(speed) {
-	
+
 	playbackRate = speed;
 	update_ui();
-	
+
 	document.querySelectorAll("video, audio").forEach(function(e) {
-		e.playbackRate = parseFloat(playbackRate); 
+		e.playbackRate = parseFloat(playbackRate);
 	});
-	
+
 }
 
 colorcode = "red";
 triggered = false;
 check = "";
 
-window.initURLspeed = get_url_param("s");
+window.initURLspeed = get_url_param("r");
 initURLspeed == "0" ? delete window.initURLspeed : "" ;
 
 setInterval( function() {
-    
+
     var url = window.location.href.split("&")[0];
 	if ( url != check && url.includes("v=") ) {
-		
+
         check = url;
 		// console.log("new video url:", check);
-		
+
         setTimeout(function() {
-            
+
 			var video_id = get_url_param("v");
-			
-			key = "AIzaSyByajtIoT9Nq9-bKZI6bAFk2usmjm1COK8"; 
+
+			key = "AIzaSyByajtIoT9Nq9-bKZI6bAFk2usmjm1COK8";
 			parts = "snippet,statistics";
 			field = "items(snippet(title,categoryId,liveBroadcastContent),statistics(likeCount,dislikeCount))";
 			api_url = "https://www.googleapis.com/youtube/v3/videos";
 			link = api_url + "?key=" + key + "&id=" + video_id + "&fields=" + field + "&part=" + parts;
-			
+
 			fetch(link)
 			.then(response => response.json())
-			.then(function(data) { 
-				
+			.then(function(data) {
+
 				title = data.items[0].snippet.title;
 				category = data.items[0].snippet.categoryId;
-				is_live = data.items[0].snippet.liveBroadcastContent; 
+				is_live = data.items[0].snippet.liveBroadcastContent;
 
-				likes = data.items[0].statistics.likeCount; 
-				dislikes = data.items[0].statistics.dislikeCount; 
-				
-				if (category == "10" || is_live == "live" ) { 
+				likes = data.items[0].statistics.likeCount;
+				dislikes = data.items[0].statistics.dislikeCount;
+
+				if (category == "10" || is_live == "live" ) {
 					if ( localStorage.getItem("thirtysix_music") == "true" || is_live == "live" ) { playbackRate = 1.0 }
 					else if ( localStorage.getItem("thirtysix_speed") ) { playbackRate = localStorage.getItem("thirtysix_speed"); }
 					else { playbackRate = 1.00; }
 					colorcode = "rgba(205, 87, 87, 0.8)";
-				} else { 
+				} else {
 					if ( localStorage.getItem("thirtysix_speed") ) { playbackRate = localStorage.getItem("thirtysix_speed"); }
 					else { playbackRate = 1.00; }
 					colorcode = "rgba(50, 121, 168, 0.8)";
 				}
-				
+
 				if (typeof initURLspeed == "undefined") {
-					playbackRate = get_url_param("s") != "0" ? parseFloat(get_url_param("s"))/100 : playbackRate;
+					playbackRate = get_url_param("r") != "0" ? parseFloat(get_url_param("r"))/100 : playbackRate;
 					var video_t = get_url_param("t");
-					window.history.replaceState("", "", "?v="+video_id+"&t="+video_t+"&s="+parseInt(playbackRate*100));
+					window.history.replaceState("", "", "?v="+video_id+"&t="+video_t+"&r="+parseInt(playbackRate*100));
 				} else {
 					playbackRate = parseFloat(initURLspeed)/100;
 					var video_t = get_url_param("t");
-					window.history.replaceState("", "", "?v="+video_id+"&t="+video_t+"&s="+parseInt(playbackRate*100));
+					window.history.replaceState("", "", "?v="+video_id+"&t="+video_t+"&r="+parseInt(playbackRate*100));
 					delete window.initURLspeed;
 				}
 
@@ -225,11 +225,11 @@ setInterval( function() {
 					"id = " + video_id + "\n" +
 					"category = " + category + "\n" +
 					"live = " + is_live + "\n" +
-					"likes = " + likes + "\n" + 
-					"dislikes = " + dislikes + "\n" + 
+					"likes = " + likes + "\n" +
+					"dislikes = " + dislikes + "\n" +
 					"init speed = " + playbackRate
 				);
-				
+
 				setTimeout(function() {
 					// remove video info box because i dont care about it!
 					if ( document.getElementById("clarify-box") !== null ) {
@@ -250,30 +250,30 @@ setInterval( function() {
 				}, 1000);
 
 				new_video(playbackRate);
-				
+
 			})
-			.catch(function(err) { 
+			.catch(function(err) {
 				console.log(err);
-				
+
 				if ( localStorage.getItem("thirtysix_speed") ) { playbackRate = localStorage.getItem("thirtysix_speed"); }
 				else { playbackRate = 1.00; }
 				colorcode = "rgba(255, 0, 0, 0.8)";
-				
+
 				new_video(playbackRate);
 			})
 
         },1000);
-		
-    } 
 
-	
+    }
+
+
 	// switch link to /videos of a channel
 	// var target = ["channel", "user"]
     // target.forEach(function(e) {
     //     if (url.includes("youtube") && url.includes(e)) {
     //         let anchor = url.indexOf(e);
     //         let newurl = url.substring(anchor + e.length + 1, url.length);
-            
+
     //         if ( !newurl.includes("/") && !triggered ) {
     //             window.stop();
     //             triggered = true;
@@ -343,11 +343,11 @@ function setClipboardText(text){
 }
 
 
-document.onmousedown = function click() { 
-	if (event.button == 2) { 
+document.onmousedown = function click() {
+	if (event.button == 2) {
 		replace_link();
-	} 
-} 
+	}
+}
 
 function replace_link() {
 	setTimeout(function() {
@@ -357,40 +357,40 @@ function replace_link() {
 				el = document.querySelectorAll(".ytp-panel-menu")[1];
 				el.children[1].addEventListener("click", function() {
 					setTimeout(function() {
-						
+
 						video_t = "0";
-						
+
 						var video_id = get_url_param("v");
-						var video_s = get_url_param("s");
-						
-						newurl = "?v="+video_id+"&t="+video_t+"&s="+video_s;
+						var video_s = get_url_param("r");
+
+						newurl = "?v="+video_id+"&t="+video_t+"&r="+video_s;
 						window.history.replaceState("", "", newurl);
 						check = window.location.href;
-						
-						setClipboardText("https://youtu.be/"+get_url_param("v")+"?t="+video_t+"&s="+video_s);
-						
+
+						setClipboardText("https://youtu.be/"+get_url_param("v")+"?t="+video_t+"&r="+video_s);
+
 					},100)
 				});
 				el.children[2].addEventListener("click", function() {
 					setTimeout(function() {
-						
+
 						time_current = document.querySelector(".ytp-time-current").textContent;
 						video_t = timestring_to_seconds(time_current);
-						
+
 						var video_id = get_url_param("v");
-						var video_s = get_url_param("s");
-						
-						newurl = "?v="+video_id+"&t="+video_t+"&s="+video_s;
+						var video_s = get_url_param("r");
+
+						newurl = "?v="+video_id+"&t="+video_t+"&r="+video_s;
 						window.history.replaceState("", "", newurl);
 						check = window.location.href;
-						
-						setClipboardText("https://youtu.be/"+get_url_param("v")+"?t="+video_t+"&s="+video_s);
-						
+
+						setClipboardText("https://youtu.be/"+get_url_param("v")+"?t="+video_t+"&r="+video_s);
+
 					},100)
 				});
 			} catch (e) {
-				
+
 			}
-		} 
+		}
 	},100)
 }
